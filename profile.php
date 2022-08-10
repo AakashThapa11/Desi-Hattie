@@ -36,6 +36,33 @@ session_start();
     }
 
 
+    if(isset($_GET['remove'])){
+        $id = $_GET['remove'];
+        mysqli_query($con, "DELETE FROM wishlist WHERE id = $id");
+        header('location:profile.php');
+     };
+
+?>
+
+
+<?php
+
+
+if(isset($_GET['productid'])){
+    $productid = $_GET['productid'];
+
+    $query = "SELECT * FROM productdetails where id = $productid";
+    $result = mysqli_query($con,$query);
+    $row = mysqli_fetch_array($result);
+
+
+    $query1 = "insert into wishlist (product_id, product_name, price) values ('".$productid."', '".$row['name']."', '".$row['price']."')";
+    if(mysqli_query($con, $query1)){
+        header("Location: profile.php");
+        die;
+    }
+ };
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -55,6 +82,7 @@ session_start();
 
         <!-- Bootstrap CSS File -->
         <link href="vendor/bootstrap/css/bootstrapp.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
         <!-- Libraries CSS Files -->
         <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet">
@@ -64,6 +92,24 @@ session_start();
 
         <!-- Main Stylesheet File -->
         <link href="css/style1.css" rel="stylesheet">
+
+        <style>
+            .btn{
+                display: block;
+                width: 100%;
+                cursor: pointer;
+                border-radius: .5rem;
+                font-size: 1.1rem;
+                padding:1rem 3rem;
+                text-align: center;
+            }
+
+.btn:hover{
+   background: var(--black);
+}
+
+        </style>
+        
     </head>
 
     <body>
@@ -81,6 +127,7 @@ session_start();
             <div class="container">
                 <nav id="nav-menu-container">
                     <ul class="nav-menu">
+                    <li class="logo" ><a href="index.php"><img src="img/logo.png" /></a> </li>
                         <li><a href="index.php">Home</a></li>
                         <li><a href="about.php">About</a></li>
                         <li><a href="menu.php">Menu</a></li>
@@ -149,6 +196,43 @@ session_start();
             </div>
         </section>
         <!-- Reservations Section End -->
+
+        <!-- Cart Section Start -->
+        <section id="cart">
+            <div class="container">
+                <header class="section-header">
+                    <h3>Wishlist</h3>
+                </header>
+                <h3 class="title2">Wishlist Products</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+            <tr>
+                <th width="30%">Product Name</th>
+                <th width="10%">Price</th>
+                <th width="13%">Date and Time</th>
+                <th width="10%"></th>
+            </tr>
+
+            <?php
+            $query = "SELECT * FROM wishlist";
+            $result = mysqli_query($con,$query);
+
+            while($row = mysqli_fetch_array($result)){ ?>
+
+                        <tr>
+                            <td><?php echo $row["product_name"]; ?></td>
+                            <td><?php echo $row["price"]; ?></td>
+                            <td><?php echo $row["time"]; ?></td>
+                            <td>
+                            <a href="profile.php?remove=<?php echo $row['id']; ?>" class="btn"> <i class="fas fa-trash"></i> Remove </a>
+                            </td>
+                        </tr>
+            <?php } ?>
+            </table>
+        </div>
+            </div>
+        </section>
+        <!-- Cart Section End -->
 
         <section id="login">
             <div class="container">

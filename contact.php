@@ -42,6 +42,7 @@
             <div class="container">
                 <nav id="nav-menu-container">
                     <ul class="nav-menu">
+                    <li class="logo" ><a href="index.php"><img src="img/logo.png" /></a> </li>
                         <li><a href="index.php">Home</a></li>
                         <li><a href="about.php">About</a></li>
                         <li><a href="menu.php">Menu</a></li>

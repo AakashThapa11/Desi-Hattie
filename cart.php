@@ -54,6 +54,7 @@ session_start();
             <div class="container">
                 <nav id="nav-menu-container">
                     <ul class="nav-menu">
+                    <li class="logo" ><a href="index.php"><img src="img/logo.png" /></a> </li>
                         <li><a href="index.php">Home</a></li>
                         <li><a href="about.php">About</a></li>
                         <li><a href="menu.php">Menu</a></li>
@@ -182,7 +183,7 @@ session_start();
                 <header class="section-header">
                     <h3>Checkout</h3>
                 </header>
-                <form method="post">
+                <form action= "payscript.php" method="post">
                     <div class="row form">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -190,6 +191,16 @@ session_start();
                         </div>
                         <div class="form-group">
                             <input type="email" class="form-control" name="Uemail"placeholder="Email" />
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control"name="contact" placeholder="Phone Number" />
+                        </div>
+                        <div class="form-group">
+                            <p>Please choose whether you want to delivery your food or takeaway by yourself:</p>
+                            <input type="radio" id="html" name="delivery" value="delivery">
+                            <label for="html">delivery</label>
+                            <input type="radio" id="css" name="delivery" value="takeaway">
+                            <label for="css">takeaway</label><br>
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control" name="Uaddress" placeholder="Address" />
@@ -204,6 +215,8 @@ session_start();
                             <div class="form-group col-md-6">
                                 <input type="text" class="form-control" name="Uzip"placeholder="Zip" />
                             </div>
+                            <input type="hidden" value="<?php echo number_format($total, 2); ?>" name="amount">
+                            <input type="hidden" value="<?php echo $orderItem;?>" name="orderDet">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -211,27 +224,10 @@ session_start();
                             <p>We Accept:</p>
                             <img src="img/credit-cards.png" />
                         </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="cardname" placeholder="Name on Card" />
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="cardnum" placeholder="Credit card number" />
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="cardmth" placeholder="Exp Month" />
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <input type="text" class="form-control" name="cardyear" placeholder="Exp Year" />
-                            </div>
-                            <div class="form-group col-md-6">
-                                <input type="text" class="form-control" name="cardcvv" placeholder="CVV" />
-                            </div>
-                        </div>
-                    </div>
-                    <div><span>Your total today <b>$<?php echo number_format($total, 2);?></b></span></div>
+                        <div><span>Your total today <b>$<?php echo number_format($total, 2);?></b></span></div>
                     <div class="button">
                         <button type="submit" name="placeorder">Place Order</button>
+                    </div>
                     </div>
                 </form>
                 </div>
@@ -240,44 +236,7 @@ session_start();
         <!-- Checkout Section End -->
 
 
-        <?php
-
-
-        if(isset($_POST['placeorder'])){
-
-        $user_id = $user_data['user_id'];
-        $name = $user_data['user_name'];
-        $orderDet = $orderItem;
-        $totalAmt = $total;
-        $email = $_POST['Uemail'];
-        $address = $_POST['Uaddress'];
-        $city = $_POST['Ucity'];
-        $state = $_POST['Ustate'];
-        $zip = $_POST['Uzip'];
-        $cardName = $_POST['cardname'];
-        $cardNum = $_POST['cardnum'];
-        $cardMth = $_POST['cardmth'];
-        $cardYear = $_POST['cardyear'];
-        $cardCvv = $_POST['cardcvv'];
-
-
-
-        if(!empty($name) && !empty($email) && !empty($address) && !empty($city) && !empty($state) && !empty($zip) && !empty($cardName) && !empty($cardNum)  && !empty($cardMth)  && !empty($cardYear) && !empty($cardCvv)){
-
-            $query = "INSERT INTO orderdetails(userid, name, orderdet, totalamt, email, address, city, state, zip) VALUES ('$user_id','$name','$orderDet','$totalAmt','$email','$address','$city','$state','$zip')";
-            $result = mysqli_query($con, $query);
-             if($result){
-                echo '<script>alert("Congratulations!! Your order has placed. Order More food !!")</script>';
-                echo '<script>window.location="menu.php"</script>';
-            }else{
-                echo "Your order hasnot been placed. Please try again!!";  
-            }
-        }else{
-         echo "Please fill all the details";  
-        }
-    }
-
-        ?>
+        
         <!-- Subscriber Section Start -->
         <section id="subscriber">
             <div class="container">

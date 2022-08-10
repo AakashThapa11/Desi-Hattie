@@ -4,8 +4,7 @@ session_start();
 	include("connection.php");
 	include("function.php");
 
-	$user_data = check_login($con);
-
+	
     if(isset($_POST["submit"])){
         $str = mysqli_real_escape_string($con, $_POST['str']);
         header("Location: search.php?str=".$str."");
@@ -58,7 +57,7 @@ session_start();
             <div class="container">
                 <nav id="nav-menu-container">
                     <ul class="nav-menu">
-                       
+                    <li><a href="index.php"><img src="img/logo.png" /></a></li> 
                         <li class="menu-active"><a href="index.php">Home</a></li>
                         <li><a href="about.php">About </a></li>
                         <li><a href="menu.php">Menu</a></li>
@@ -88,11 +87,12 @@ session_start();
                 </header>
                 <div class="row">
                     <div class="col-md-12">
+                        <form action="tableBooking.php" method="post">
                         <div class="form-row">
                             <div class="control-group col-sm-3">
                                 <div class="form-group">
                                     <div class="input-group date" id="date" data-target-input="nearest">
-                                        <input type="date" class="form-control datetimepicker-input" value="2022-05-14"
+                                        <input type="date" name="tableDate" class="form-control datetimepicker-input" value="2022-05-14"
        												min="2022-05-14" max="2030-01-21" placeholder="Date" data-target="#date"/>
                                         <div class="input-group-append" data-target="#date" data-toggle="datetimepicker">
                                             <div class="input-group-text"></div>
@@ -103,7 +103,7 @@ session_start();
                             <div class="control-group col-sm-3">
                                 <div class="form-group">
                                     <div class="input-group date" id="time" data-target-input="nearest">
-                                        <input type="time" class="form-control datetimepicker-input" value="10:00" min="08:00" max="22:00"placeholder="Time" data-target="#time"/>
+                                        <input type="time" name="tableTime" class="form-control datetimepicker-input" value="10:00" min="08:00" max="22:00"placeholder="Time" data-target="#time"/>
                                         <div class="input-group-append" data-target="#time" data-toggle="datetimepicker">
                                             <div class="input-group-text"></div>
                                         </div>
@@ -111,24 +111,24 @@ session_start();
                                 </div>
                             </div>
                             <div class="control-group col-sm-3">
-                                <select class="custom-select">
-                                    <option selected>Party Size</option>
-                                    <option value="1">1 Person</option>
-                                    <option value="2">2 People</option>
-                                    <option value="3">3 People</option>
-                                    <option value="4">4 People</option>
-                                    <option value="5">5 People</option>
-                                    <option value="6">6 People</option>
-                                    <option value="7">7 People</option>
-                                    <option value="8">8 People</option>
-                                    <option value="9">9 People</option>
-                                    <option value="10">10 People</option>
+                                <select  name="partySize" class="custom-select">
+                                    <option name="partySize"value="1">1 Person</option>
+                                    <option name="partySize" value="2">2 People</option>
+                                    <option name="partySize" value="3">3 People</option>
+                                    <option name="partySize" value="4">4 People</option>
+                                    <option name="partySize" value="5">5 People</option>
+                                    <option name="partySize" value="6">6 People</option>
+                                    <option name="partySize" value="7">7 People</option>
+                                    <option name="partySize" value="8">8 People</option>
+                                    <option name="partySize" value="9">9 People</option>
+                                    <option name="partySize" value="10">10 People</option>
                                 </select>
                             </div>
                             <div class="control-group col-sm-3">
                                 <button class="btn btn-block btn-book">Book Now</button>
                             </div>
                         </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -138,7 +138,7 @@ session_start();
         <!-- Welcome Section Start -->
         <div id="welcome">
             <div class="container">
-                <h3>Welcome <b style="color:DodgerBlue;"><?php echo $user_data['user_name']; ?></b> to Desi Hattie</h3>
+                <h3>Welcome to Desi Hattie</h3>
                 <p><span class="desi"> Desi Hattie </span> on Oxford street offers counter Indian fare at solid prices. The Indian kebab never disappoints. Additional menu items include samosas, curries, an array of tandoori bread and mango lassi. Online orders are now available. Friendly counter service. When the order is placed, you would receive a text confirmation confirming your order. To view all the dishes in our menu, please click on the order online button and grab our offer</p>
                 <a href="#">Book Now</a>
             </div>

@@ -5,6 +5,12 @@ session_start();
     include("function.php");
 
     $user_data = check_adminlogin($con);
+
+    use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
+
+require 'vendor/autoload.php';
    
 ?>
 
@@ -26,6 +32,9 @@ session_start();
 </head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+    html{
+    font-size: 12px;
+  }
 body {margin: 0;}
 
 ul.topnav {
@@ -37,6 +46,7 @@ ul.topnav {
   position: -webkit-sticky; /* Safari */
   position: sticky;
   top: 0;
+  font-size: 15px;
 }
 
 ul.topnav li {float: left;}
@@ -188,8 +198,12 @@ h3{
   <li><a href="adminIndex.php">Home</a></li>
   <li><a class="active" href="viewOrders.php">Order</a></li>
   <li><a href="roasterUpdate.php">Roaster</a></li>
+  <li><a href="adminTable.php">Table</a></li>
+  <li><a href="userMail.php">Mail</a></li>
   <li class="right"><a href="logout.php">Logout</a></li>
 </ul>
+
+
 
 <h3>Online Order</h3>
 <div class="table-wrapper">
@@ -197,9 +211,10 @@ h3{
         <thead>
         <tr>
             <th width="20%">Customer Name</th>
-                <th width="17%">Order</th>
+                <th width="17%">Order ID</th>
                 <th width="13%">Total Amount</th>
                 <th width="10%">Email</th>
+                <th width="20%">Delivery</th>
                 <th width="20%">Address</th>
                 <th width="20%">Time</th>
                 <th width="10%">Order Ready</th>
@@ -217,22 +232,46 @@ h3{
                             <td><?php echo $row['orderdet']; ?></td>
                             <td>$ <?php echo $row['totalamt']; ?></td>
                             <td><?php echo $row['email']; ?></td>
+                            <td><?php echo $row['delivery']; ?></td>
                             <td><?php echo $row['address']; ?> <?php echo $row['city']; ?> <?php echo $row['city']; ?> <?php echo $row['state']; ?> </td>
                             <td><?php echo $row['orderTime']; ?></td>
-                            <td><button class="btn button1" type="ready" name="ready">Ready</button></td>
+                            <td><a href="viewOrders.php?delete=<?php echo $row['orderid']; ?>" class="btn button1" type="ready" name="ready">Ready</a></td>
                             <?php
-                                if (isset($_POST["ready"])){
-                                 $sql = "DELETE FROM orderdetails WHERE orderid = '".$row['orderid']."'";
-                                 $res = mysqli_query($con,$sql);
-                                 echo '<script>alert("Order Ready Message has been sent!!")</script>';
-                                 echo '<script>window.location="viewOrders.php"</script>';
-                                 }
-                           ?>
-                        </tr>
-                  </form>
-                    <?php } ?>
-        <tbody>
-    </table>
+                                if(isset($_GET['delete'])){
+                                    $orderid = $_GET['delete'];
+                                    $mail=new PHPMailer(true);
+                                    $mail->isSMTP();                                            //Send using SMTP
+                                    $mail->Host       = 'smtp.gmail.com';                     //Set the SMTP server to send through
+                                    $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+                                    $mail->Username   = 'ecommerce19168@gmail.com';                     //SMTP username
+                                    $mail->Password   = 'btqvcjanxmpptjzk';                               //SMTP password
+                                    $mail->SMTPSecure = 'tls';            //Enable implicit TLS encryption
+                                    $mail->Port       = 587;  
+
+                                    //Recipients
+                                    $mail->setFrom("ecommerce19168@gmail.com");
+                                    $mail->addReplyTo("ecommerce19168@gmail.com");
+                                    $mail->addAddress($row['email']);
+                                    //Content
+                                    $mail->isHTML(true);                                  //Set email format to HTML
+                                    $mail->Subject = "Hey\t".$row['name']."\tYour order is ready"; 
+                                    $mail->Body    = nl2br("Order Details:".$row['orderdet']."\nTotal amt: $".$row['totalamt']."\nDelivery: ".$row['delivery']."\nOrder Time: ".$row['orderTime']."\nThanks Desi Hattie",false);
+                                    if($mail->send()){
+                                        echo '<script>alert("Mail has been sent to all the customers")</script>';
+                                        mysqli_query($con, "DELETE FROM orderdetails WHERE orderid = $orderid");
+                                        echo '<script>window.location="viewOrders.php"</script>';
+                                    }else{
+                                        echo '<script>alert("Mail cannot be sent at the moment. Please try again!!")</script>';
+                                        echo '<script>window.location="viewOrders.php"</script>';
+                                    }
+
+                                };
+                                ?>
+                                                        </tr>
+                                                  </form>
+                                <?php } ?>
+                                        <tbody>
+                                    </table>
 </div>
 
 </body>

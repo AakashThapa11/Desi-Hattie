@@ -4,7 +4,6 @@ session_start();
 	include("connection.php");
 	include("function.php");
 
-	$user_data = check_login($con);
 
     if (isset($_POST["addtocart"])){
         if (isset($_SESSION["cart"])){
@@ -75,6 +74,44 @@ session_start();
 
         <!-- Main Stylesheet File -->
         <link href="css/style1.css" rel="stylesheet">
+
+        <style>
+            #food-menu .single-menu span {
+            position: absolute;
+            width: 65px;
+            height: 45px;
+            top: 0;
+            right: 0;
+            padding: 10px 0;
+            font-size: 18px;
+            font-weight: 600;
+            background: rgba(188, 155, 93, .8);
+            border-radius: 0 6px 0 6px;
+            z-index: 1;
+            }
+
+            #food-menu .single-menu span a i:hover{
+                background: 
+            }
+
+            .lock:hover .fa-heart-o,
+            .lock .fa-heart {
+            display: none;
+            }
+            .lock:hover .fa-heart {
+            display: inline;
+            }
+            .card-filter{
+                width: 180px;
+                position: flex;
+                text-align: start;
+                position: fixed;
+                left: 10px;
+                border: 1px solid black;
+                
+            }
+
+        </style>
     </head>
 
     <body>
@@ -93,6 +130,7 @@ session_start();
             <div class="container">
                 <nav id="nav-menu-container">
                     <ul class="nav-menu">
+                    <li class="logo" ><a href="index.php"><img src="img/logo.png" /></a> </li>
                         <li><a href="index.php">Home</a></li>
                         <li><a href="about.php">About</a></li>
                         <li class="menu-active"><a href="menu.php">Menu</a></li>
@@ -168,14 +206,64 @@ session_start();
                 <header class="section-header">
                     <h3>delicious Food Menu</h3>
                 </header>
+                <form action="" method="GET">
+                    <div class="card-filter">
+                        <div class="card-header">
+                            <h5>Filter 
+                                <button type="submit" class="btn btn-primary btn-sm float-end">Search</button>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>Category List</h6>
+                            <hr>
+                            <?php
+                                $brand_query = "SELECT * FROM productcategory";
+                                $brand_query_run  = mysqli_query($con, $brand_query);
+
+                                if(mysqli_num_rows($brand_query_run) > 0)
+                                {
+                                    foreach($brand_query_run as $brandlist)
+                                    {
+                                        $checked = [];
+                                        if(isset($_GET['brands']))
+                                        {
+                                            $checked = $_GET['brands'];
+                                        }
+                                        ?>
+                                            <div>
+                                                <input type="checkbox" name="brands[]" value="<?= $brandlist['id']; ?>" 
+                                                    <?php if(in_array($brandlist['id'], $checked)){ echo "checked"; } ?>
+                                                 />
+                                                <?= $brandlist['name']; ?>
+                                            </div>
+                                        <?php
+                                    }
+                                }
+                                else
+                                {
+                                    echo "No Brands Found";
+                                }
+                            ?>
+                        </div>
+                    </div>
+                </form>
+                <div>    
                 <div class="row">
-                	<?php 
-
-                    $query = "SELECT * FROM productdetails";
-                    $result = mysqli_query($con,$query);
-
-                    while($row = mysqli_fetch_array($result)){ ?>
-                    <div class="col-sm-6 col-md-4 col-lg-3">
+                <?php
+                            if(isset($_GET['brands']))
+                            {
+                                $branchecked = [];
+                                $branchecked = $_GET['brands'];
+                                foreach($branchecked as $rowbrand)
+                                {
+                                    // echo $rowbrand;
+                                    $products = "SELECT * FROM productdetails WHERE category_id IN ($rowbrand)";
+                                    $products_run = mysqli_query($con, $products);
+                                    if(mysqli_num_rows($products_run) > 0)
+                                    {
+                                        foreach($products_run as $row) :
+                                            ?>
+                                                <div class="col-sm-6 col-md-4 col-lg-3">
                         <div class="single-menu">
                             <form method="post" action="menu.php?id=<?=$row['id'] ?>">
                                 <img class="img-fluid" src="uploaded_img/<?php echo $row['image']; ?>" />
@@ -183,12 +271,54 @@ session_start();
                                 <h4><?php echo $row['name']; ?></h4>   
                             <input type="hidden" name="hidden_name" value="<?= $row['name'] ?>">
                             <input type="hidden" name="hidden_price" value="<?= $row['price'] ?>">
+                            <span><a href="profile.php?productid=<?=$row['id'] ?>" class="lock">
+                                    <i class="fa fa-heart-o" style="font-size:24px;color:red"></i>
+                                    <i class="fa fa-heart" style="font-size:24px;color:red"></i>
+                                    </a></span>
                             <p><input type="number" name="quantity" value="1" class="form-control" min="1" max="10"></p>
                             <input type="submit" class="button" name="addtocart" value="Order Now">
                             </form>
                         </div>
                     </div>
-                    <?php } ?>
+                                            <?php
+                                        endforeach;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                $products = "SELECT * FROM productdetails";
+                                $products_run = mysqli_query($con, $products);
+                                if(mysqli_num_rows($products_run) > 0)
+                                {
+                                    foreach($products_run as $row) :
+                                        ?>
+                                            <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="single-menu">
+                            <form method="post" action="menu.php?id=<?=$row['id'] ?>">
+                                <img class="img-fluid" src="uploaded_img/<?php echo $row['image']; ?>" />
+                                <div>$<?php echo $row['price']; ?></div>
+                                <h4><?php echo $row['name']; ?></h4>   
+                            <input type="hidden" name="hidden_name" value="<?= $row['name'] ?>">
+                            <input type="hidden" name="hidden_price" value="<?= $row['price'] ?>">
+                            <span><a href="profile.php?productid=<?=$row['id'] ?>" class="lock">
+                                    <i class="fa fa-heart-o" style="font-size:24px;color:red"></i>
+                                    <i class="fa fa-heart" style="font-size:24px;color:red"></i>
+                                    </a></span>
+                            <p><input type="number" name="quantity" value="1" class="form-control" min="1" max="10"></p>
+                            <input type="submit" class="button" name="addtocart" value="Order Now">
+                            </form>
+                        </div>
+                    </div>
+                                        <?php
+                                    endforeach;
+                                }
+                                else
+                                {
+                                    echo "No Items Found";
+                                }
+                            }
+                        ?>
             	</div>
             </div>
         </section>

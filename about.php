@@ -4,7 +4,6 @@ session_start();
     include("connection.php");
     include("function.php");
 
-    $user_data = check_login($con);
 ?>
 
 
@@ -52,6 +51,7 @@ session_start();
             <div class="container">
                 <nav id="nav-menu-container">
                     <ul class="nav-menu">
+                    <li class="logo" ><a href="index.php"><img src="img/logo.png" /></a> </li>
                         <li><a href="index.php">Home</a></li>
                         <li class="menu-active"><a href="about.php">About</a></li>
                         <li><a href="menu.php">Menu</a></li>
